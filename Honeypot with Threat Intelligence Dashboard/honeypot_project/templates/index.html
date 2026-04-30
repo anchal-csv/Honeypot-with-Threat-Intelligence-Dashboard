@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white text-center p-3">
+            <h3>{{ stats.total_attacks }}</h3>
+            <p class="mb-0">Total Attacks</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white text-center p-3">
+            <h3>{{ stats.top_ips|length }}</h3>
+            <p class="mb-0">Unique Attackers (Top 5)</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark text-center p-3">
+            <h3>{{ stats.top_passwords|length }}</h3>
+            <p class="mb-0">Pass Guesses (Top 5)</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-dark text-center p-3">
+            <h3>{{ stats.top_commands|length }}</h3>
+            <p class="mb-0">Commands Executed (Top 5)</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5 class="card-title">Top 5 Attacker IPs</h5>
+            <canvas id="ipChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5 class="card-title">Top 5 Passwords Tried</h5>
+            <canvas id="passChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    fetch('/api/data')
+        .then(response => response.json())
+        .then(data => {
+            // Chart Data Prep
+            const ipLabels = data.top_ips.map(item => item.ip);
+            const ipCounts = data.top_ips.map(item => item.count);
+
+            const passLabels = data.top_passwords.map(item => item.password);
+            const passCounts = data.top_passwords.map(item => item.count);
+
+            // IP Chart (Pie)
+            new Chart(document.getElementById('ipChart'), {
+                type: 'pie',
+                data: {
+                    labels: ipLabels,
+                    datasets: [{
+                        data: ipCounts,
+                        backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#4bc0c0']
+                    }]
+                }
+            });
+
+            // Password Chart (Bar)
+            new Chart(document.getElementById('passChart'), {
+                type: 'bar',
+                data: {
+                    labels: passLabels,
+                    datasets: [{
+                        label: 'Frequency',
+                        data: passCounts,
+                        backgroundColor: '#0d6efd'
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true } } }
+            });
+        });
+</script>
+{% endblock %}

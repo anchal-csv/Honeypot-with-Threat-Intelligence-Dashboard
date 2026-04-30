@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card p-4">
+    <h3 class="mb-4">Raw Login Attempts</h3>
+    <table class="table table-striped table-hover table-dark">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>IP Address</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Command Attempted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.ip }}</td>
+                <td>{{ log.username }}</td>
+                <td>{{ log.password }}</td>
+                <td><code class="text-warning">{{ log.command_attempted }}</code></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center">No logs recorded yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
